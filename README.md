@@ -82,6 +82,7 @@ BookVault currently supports:
 * Health checks for runtime verification
 * Book search by query string
 * Retrieval and transformation of external book metadata
+* Automated API testing for core endpoints
 * Containerized deployment on AWS
 * Automated image build and deployment workflow
 
@@ -121,6 +122,7 @@ Planned improvements include HTTPS, autoscaling, caching, and richer operational
 * Git
 * Shell scripting
 * YAML
+* Pytest
 
 ---
 
@@ -136,7 +138,12 @@ bookvault/
 │   └── runbook.md
 ├── api/
 │   ├── app/
+│   │   ├── __init__.py
 │   │   └── main.py
+│   ├── tests/
+│   │   ├── __init__.py
+│   │   ├── test_health.py
+│   │   └── test_books.py
 │   ├── requirements.txt
 │   └── Dockerfile
 ├── terraform/
@@ -189,7 +196,7 @@ GET /books?q=<search_term>
 Example:
 
 ```http
-GET /books?q=dune
+GET /books?q=fantasy
 ```
 
 Example response:
@@ -197,9 +204,17 @@ Example response:
 ```json
 [
   {
-    "title": "Dune",
-    "author": "Frank Herbert",
-    "published": "1965"
+    "id": "acotar123",
+    "title": "A Court of Thorns and Roses",
+    "authors": ["Sarah J. Maas"],
+    "published": "2015",
+    "publisher": "Bloomsbury Publishing",
+    "description": "A fantasy romance novel.",
+    "page_count": 432,
+    "categories": ["Fantasy", "Romance"],
+    "thumbnail": "https://example.com/acotar.jpg",
+    "preview_link": "https://example.com/acotar-preview",
+    "info_link": "https://example.com/acotar-info"
   }
 ]
 ```
@@ -265,7 +280,29 @@ Test the API:
 curl "http://localhost:8000/books?q=dune"
 ```
 
+### Run automated tests
+
+Automated tests are included for the core API endpoints.
+
+Current test coverage includes:
+
+- `GET /health`
+- `GET /books?q=...`
+- `GET /books/{id}`
+- validation for missing required query parameters
+
+Google Books API calls are mocked during test execution so the test suite remains stable, fast, and independent of external network conditions.
+
+Run tests locally from the `api` directory:
+
+```bash
+pip install -r requirements.txt
+pytest -v
+```
+
 ---
+
+
 
 ## Infrastructure
 

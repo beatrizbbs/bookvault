@@ -461,4 +461,4 @@ Possible next improvements for BookVault include:
 
 ## Summary
 
-BookVault uses a modern AWS container deployment pattern built around Route 53, an Application Load Balancer, ECS Fargate, ECR, Secrets Manager, CloudWatch, and private subnets distributed across two Availability Zones. The architecture was intentionally chosen to be secure, operationally clean and easy to explain
+BookVault uses a modern AWS container deployment pattern built around Route 53, an Application Load Balancer, ECS Fargate, ECR, Secrets Manager, CloudWatch, and private subnets distributed across two Availability Zones. The architecture was intentionally chosen to be secure, operationally clean and easy to explain.
