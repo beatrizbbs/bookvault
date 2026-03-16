@@ -17,3 +17,13 @@ output "ecs_service_name" {
   description = "ECS service name."
   value       = module.ecs.service_name
 }
+
+output "route53_record_fqdn" {
+  description = "Route53 alias record FQDN when enabled."
+  value       = var.enable_route53 ? module.route53[0].fqdn : null
+}
+
+output "app_secret_arn" {
+  description = "Managed app secret ARN when creation is enabled."
+  value       = var.create_app_secret ? module.app_secret[0].secret_arn : null
+}

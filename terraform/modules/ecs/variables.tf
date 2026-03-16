@@ -78,6 +78,21 @@ variable "environment_variables" {
   default = []
 }
 
+variable "secrets" {
+  description = "Secrets injected into the container from AWS Secrets Manager."
+  type = list(object({
+    name       = string
+    value_from = string
+  }))
+  default = []
+}
+
+variable "secrets_access_arns" {
+  description = "Secret ARNs the ECS task execution role can read."
+  type        = list(string)
+  default     = []
+}
+
 variable "tags" {
   description = "Tags applied to ECS resources."
   type        = map(string)

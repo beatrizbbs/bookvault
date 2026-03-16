@@ -30,6 +30,24 @@ resource "aws_iam_role_policy_attachment" "task_execution" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
 
+data "aws_iam_policy_document" "task_execution_secrets" {
+  count = length(var.secrets_access_arns) > 0 ? 1 : 0
+
+  statement {
+    effect    = "Allow"
+    actions   = ["secretsmanager:GetSecretValue"]
+    resources = var.secrets_access_arns
+  }
+}
+
+resource "aws_iam_role_policy" "task_execution_secrets" {
+  count = length(var.secrets_access_arns) > 0 ? 1 : 0
+
+  name   = "${var.name}-task-exec-secrets"
+  role   = aws_iam_role.task_execution.id
+  policy = data.aws_iam_policy_document.task_execution_secrets[0].json
+}
+
 resource "aws_cloudwatch_log_group" "this" {
   name              = local.log_group_name
   retention_in_days = var.log_retention_in_days
@@ -88,6 +106,12 @@ resource "aws_ecs_task_definition" "this" {
         }
       ]
       environment = var.environment_variables
+      secrets = [
+        for secret in var.secrets : {
+          name      = secret.name
+          valueFrom = secret.value_from
+        }
+      ]
       logConfiguration = {
         logDriver = "awslogs"
         options = {

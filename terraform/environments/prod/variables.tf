@@ -76,6 +76,77 @@ variable "task_memory" {
   default     = 1024
 }
 
+variable "create_app_secret" {
+  description = "Create a managed secret in Secrets Manager for the application."
+  type        = bool
+  default     = false
+}
+
+variable "app_secret_name" {
+  description = "Name of the application secret in Secrets Manager."
+  type        = string
+  default     = "bookvault/prod/google-books-api-key"
+}
+
+variable "app_secret_description" {
+  description = "Description for the managed application secret."
+  type        = string
+  default     = "Google Books API key for BookVault (prod)"
+}
+
+variable "app_secret_value" {
+  description = "Optional value used for initial secret version."
+  type        = string
+  default     = null
+  sensitive   = true
+  nullable    = true
+}
+
+variable "inject_app_secret" {
+  description = "Inject the managed secret ARN into ECS container secrets."
+  type        = bool
+  default     = true
+}
+
+variable "app_secret_env_name" {
+  description = "Container environment variable name for the managed secret."
+  type        = string
+  default     = "GOOGLE_BOOKS_API_KEY"
+}
+
+variable "enable_route53" {
+  description = "Create a Route53 alias record pointing to the ALB."
+  type        = bool
+  default     = false
+}
+
+variable "route53_zone_id" {
+  description = "Route53 hosted zone ID used for record creation."
+  type        = string
+  default     = ""
+}
+
+variable "route53_record_name" {
+  description = "DNS record name for the ALB alias."
+  type        = string
+  default     = ""
+}
+
+variable "container_secrets" {
+  description = "Secrets injected into the container from Secrets Manager."
+  type = list(object({
+    name       = string
+    value_from = string
+  }))
+  default = []
+}
+
+variable "secrets_access_arns" {
+  description = "Secret ARNs readable by the ECS task execution role."
+  type        = list(string)
+  default     = []
+}
+
 variable "tags" {
   description = "Additional tags for all resources."
   type        = map(string)

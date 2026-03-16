@@ -5,3 +5,27 @@ container_image_tag   = "latest"
 desired_count         = 2
 task_cpu              = 256
 task_memory           = 512
+
+# Example Secrets Manager injection:
+# container_secrets = [
+#   {
+#     name       = "GOOGLE_BOOKS_API_KEY"
+#     value_from = "arn:aws:secretsmanager:us-east-1:123456789012:secret:bookvault/google-books-api-key-AbCdEf"
+#   }
+# ]
+#
+# secrets_access_arns = [
+#   "arn:aws:secretsmanager:us-east-1:123456789012:secret:bookvault/google-books-api-key-AbCdEf"
+# ]
+
+# Optional managed app secret + ECS injection
+#create_app_secret   = true
+#app_secret_name     = "bookvault/dev/google-books-api-key"
+#app_secret_value    = "replace-me"
+#inject_app_secret   = true
+#app_secret_env_name = "GOOGLE_BOOKS_API_KEY"
+
+# Optional Route53 alias to ALB
+#enable_route53      = true
+#route53_zone_id     = "Z123EXAMPLE"
+#route53_record_name = "api.dev.bookvault.example.com"

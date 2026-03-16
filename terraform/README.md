@@ -9,6 +9,8 @@ This directory contains modular Terraform for BookVault infrastructure.
 - `modules/ecr/`: ECR repository (`bookvault-api`)
 - `modules/alb/`: Application Load Balancer, listener, target group (`/health` check)
 - `modules/ecs/`: ECS cluster, Fargate service, task definition
+- `modules/secrets_manager/`: optional managed application secrets
+- `modules/route53/`: optional DNS alias record to the ALB
 - `environments/dev/`: development stack composition
 - `environments/prod/`: production stack composition
 

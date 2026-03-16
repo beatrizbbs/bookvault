@@ -9,6 +9,22 @@ locals {
     },
     var.tags
   )
+
+  managed_app_secret_arn = try(module.app_secret[0].secret_arn, null)
+
+  ecs_container_secrets = local.managed_app_secret_arn != null && var.inject_app_secret ? concat(
+    var.container_secrets,
+    [
+      {
+        name       = var.app_secret_env_name
+        value_from = local.managed_app_secret_arn
+      }
+    ]
+  ) : var.container_secrets
+
+  ecs_secrets_access_arns = local.managed_app_secret_arn != null && var.inject_app_secret ? distinct(
+    concat(var.secrets_access_arns, [local.managed_app_secret_arn])
+  ) : var.secrets_access_arns
 }
 
 module "vpc" {
@@ -27,6 +43,16 @@ module "ecr" {
 
   name = var.ecr_repository_name
   tags = local.common_tags
+}
+
+module "app_secret" {
+  count  = var.create_app_secret ? 1 : 0
+  source = "../../modules/secrets_manager"
+
+  name         = var.app_secret_name
+  description  = var.app_secret_description
+  secret_value = var.app_secret_value
+  tags         = local.common_tags
 }
 
 module "alb" {
@@ -55,5 +81,17 @@ module "ecs" {
   desired_count         = var.desired_count
   cpu                   = var.task_cpu
   memory                = var.task_memory
+  secrets               = local.ecs_container_secrets
+  secrets_access_arns   = local.ecs_secrets_access_arns
   tags                  = local.common_tags
+}
+
+module "route53" {
+  count  = var.enable_route53 ? 1 : 0
+  source = "../../modules/route53"
+
+  zone_id      = var.route53_zone_id
+  record_name  = var.route53_record_name
+  alb_dns_name = module.alb.alb_dns_name
+  alb_zone_id  = module.alb.alb_zone_id
 }
